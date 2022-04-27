@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 class MotorDriver(object):
-
-    def __init__(self, wheel_distance=0.098, wheel_diameter=0.066):
+    #0.098 & 0.066
+    def __init__(self, wheel_distance=0.120, wheel_diameter=0.066):
 
         """
         M1 = Right Wheel
@@ -24,8 +24,8 @@ class MotorDriver(object):
 
         self.PWM1 = 0
         self.PWM2 = 0
-        self.BASE_PWM = 40
-        self.MAX_PWM = 100
+        self.BASE_PWM = 20
+        self.MAX_PWM = 50
 
         # Wheel and chasis dimensions
         self._wheel_distance = wheel_distance
@@ -63,8 +63,8 @@ class MotorDriver(object):
     def forward(self, delay, speed=None):
         if(speed is None) :
             speed = self.BASE_PWM
-        self.p1.ChangeDutyCycle(speed)
-        self.p2.ChangeDutyCycle(speed)
+        # self.p1.ChangeDutyCycle(speed)
+        # self.p2.ChangeDutyCycle(speed)
 
         self.set_motor(1, 0, 0, 1)
         sleep(delay)
@@ -72,8 +72,8 @@ class MotorDriver(object):
     def backward(self, delay, speed=None):
         if(speed is None) :
             speed = self.BASE_PWM
-        self.p1.ChangeDutyCycle(speed)
-        self.p2.ChangeDutyCycle(speed)
+        # self.p1.ChangeDutyCycle(speed)
+        # self.p2.ChangeDutyCycle(speed)
 
         self.set_motor(0, 1, 1, 0)
         sleep(delay)
@@ -81,8 +81,8 @@ class MotorDriver(object):
     def right(self, delay, speed=None):
         if(speed is None) :
             speed = self.BASE_PWM
-        self.p1.ChangeDutyCycle(speed)
-        self.p2.ChangeDutyCycle(speed)
+        # self.p1.ChangeDutyCycle(speed)
+        # self.p2.ChangeDutyCycle(speed)
 
         self.set_motor(0, 0, 1, 0)
         sleep(delay)
@@ -90,8 +90,8 @@ class MotorDriver(object):
     def pivot_right(self, delay, speed=None):
         if(speed is None) :
             speed = self.BASE_PWM
-        self.p1.ChangeDutyCycle(speed)
-        self.p2.ChangeDutyCycle(speed)
+        # self.p1.ChangeDutyCycle(speed)
+        # self.p2.ChangeDutyCycle(speed)
 
         self.set_motor(0, 1, 0, 1)
         sleep(delay)
@@ -99,8 +99,8 @@ class MotorDriver(object):
     def left(self, delay, speed=None):
         if(speed is None) :
             speed = self.BASE_PWM
-        self.p1.ChangeDutyCycle(speed)
-        self.p2.ChangeDutyCycle(speed)
+        # self.p1.ChangeDutyCycle(speed)
+        # self.p2.ChangeDutyCycle(speed)
 
         self.set_motor(1, 0, 0, 0)
         sleep(delay)
@@ -108,10 +108,14 @@ class MotorDriver(object):
     def pivot_left(self, delay, speed=None):
         if(speed is None) :
             speed = self.BASE_PWM
-        self.p1.ChangeDutyCycle(speed)
-        self.p2.ChangeDutyCycle(speed)
+        # self.p1.ChangeDutyCycle(speed)
+        # self.p2.ChangeDutyCycle(speed)
 
         self.set_motor(1, 0, 1, 0)
+        sleep(delay)
+
+    def stop(self, delay):
+        self.set_motor(0, 0, 0, 0)
         sleep(delay)
 
     def set_wheels_speed(self, rpm_speedM1, rpm_speedM2, multiplier):
@@ -120,13 +124,11 @@ class MotorDriver(object):
         self.set_leftwheel_speed(rpm_speedM2, multiplier)
 
     def set_rightwheel_speed(self, rpm_speed, multiplier):
-
         self.PWM1 = min(int((rpm_speed * multiplier) * self.BASE_PWM), self.MAX_PWM)
         self.p1.ChangeDutyCycle(self.PWM1)
         print("M1 (right wheel)="+str(self.PWM1))
 
     def set_leftwheel_speed(self, rpm_speed, multiplier):
-
         self.PWM2 = min(int(rpm_speed * multiplier * self.BASE_PWM), self.MAX_PWM)
         self.p2.ChangeDutyCycle(self.PWM2)
         print("M2 (left wheel)="+str(self.PWM2))
@@ -183,36 +185,36 @@ class MotorDriver(object):
 
     def set_wheel_movement(self, right_wheel_rpm, left_wheel_rpm):
 
-        print("W1,W2=["+str(right_wheel_rpm)+","+str(left_wheel_rpm)+"]")
+        # print("W1,W2=["+str(right_wheel_rpm)+","+str(left_wheel_rpm)+"]")
 
         if right_wheel_rpm > 0.0 and left_wheel_rpm > 0.0:
             print("All forwards")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
-            self.forward()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
+            self.forward(0.2)
         elif right_wheel_rpm > 0.0 and left_wheel_rpm == 0.0:
             print("Right Wheel forwards, left stop")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
-            self.left()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
+            self.left(0.2)
         elif right_wheel_rpm > 0.0 and left_wheel_rpm < 0.0:
             print("Right Wheel forwards, left backwards --> Pivot left")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_PIVOT)
-            self.pivot_left()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_PIVOT)
+            self.pivot_left(0.2)
         elif right_wheel_rpm == 0.0 and left_wheel_rpm > 0.0:
             print("Right stop, left forwards")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
-            self.right()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
+            self.right(0.2)
         elif right_wheel_rpm < 0.0 and left_wheel_rpm > 0.0:
             print("Right backwards, left forwards --> Pivot right")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_PIVOT)
-            self.pivot_right()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_PIVOT)
+            self.pivot_right(0.2)
         elif right_wheel_rpm < 0.0 and left_wheel_rpm < 0.0:
             print("All backwards")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
-            self.reverse()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
+            self.backward(0.2)
         elif right_wheel_rpm == 0.0 and left_wheel_rpm == 0.0:
             print("Right stop, left stop")
-            self.set_M1M2_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
-            self.stop()
+            self.set_wheels_speed(abs(right_wheel_rpm), abs(left_wheel_rpm), self.MULTIPLIER_STANDARD)
+            self.stop(0.2)
         else:
             assert False, "A case wasn't considered==>"+str(right_wheel_rpm)+","+str(left_wheel_rpm)
             pass
@@ -236,4 +238,6 @@ class MotorDriver(object):
 
 
         self.set_wheel_movement(right_wheel_rpm, left_wheel_rpm)
+        sleep(0.5)
+        self.set_wheel_movement(0, 0)
 
