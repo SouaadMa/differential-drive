@@ -1,4 +1,6 @@
-from dooby_motordriver import MotorDriver
+from dooby_motorDriver import MotorDriver
+
+
 
 class RobotMover(object):
 
@@ -6,21 +8,63 @@ class RobotMover(object):
         self.motor_driver = MotorDriver()
 
 
-    def cmd_vel_callback(self, msg):
-        linear_speed = msg.linear.x
-        angular_speed = msg.angular.z
-
+    def cmd_vel_callback(self):
+        linear_speed = 20
+        angular_speed = 0
         # Decide Speed
         self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
 
+        linear_speed = 10
+        angular_speed = 170
+        # Decide Speed
+        self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
 
-if __name__ == '__main__':
+        linear_speed = 20
+        angular_speed = 0
+        # Decide Speed
+        self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
 
-    robot_mover = RobotMover()
+        for i in range(14) :
+            linear_speed = 10
+            angular_speed = -165
+            # Decide Speed
+            self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
 
-    msg = ""
+        linear_speed = 20
+        angular_speed = 0
+        # Decide Speed
+        self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
 
-    msg.linear.x = 20
-    msg.angular.z = 10
+        linear_speed = 10
+        angular_speed = 300
+        # Decide Speed
+        self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
+
+        linear_speed = 20
+        angular_speed = 0
+        # Decide Speed
+        self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
+        
+
+        # linear_speed = 5
+        # angular_speed = -175
+        # # Decide Speed
+        # self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
+
+        # linear_speed = 5
+        # angular_speed = -175
+        # # Decide Speed
+        # self.motor_driver.set_cmd_vel(linear_speed, angular_speed)
+
+    def cmd_vel_callback2(self, linear_s, angular_s) :
+        self.motor_driver.set_cmd_vel(linear_s, angular_s)
+
+
+robot_mover = RobotMover()
+
+def moveDoobyCar(linearspeed, angularspeed) :
+    robot_mover.cmd_vel_callback2(linearspeed, angularspeed)
+
     
-    robot_mover.cmd_vel_callback(msg)
+
+    
